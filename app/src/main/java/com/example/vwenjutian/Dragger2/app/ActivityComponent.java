@@ -11,4 +11,7 @@ import dagger.Component;
 public interface ActivityComponent {
 
     void inject(MainActivity mainActivity);
+
+
+
 }

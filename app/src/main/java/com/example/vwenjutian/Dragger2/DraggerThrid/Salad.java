@@ -24,7 +24,6 @@ public class Salad {
         SaladComponent saladComponent = DaggerSaladComponent.create();
         saladComponent.inject(this);
         System.out.println(nomalApple.hashCode()+"_______"+nomalApple2.hashCode());
-
     }
 
 

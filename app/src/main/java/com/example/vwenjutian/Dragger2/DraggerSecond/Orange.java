@@ -10,6 +10,5 @@ public class Orange {
     public Orange(Knife knife) {
         this.knife = knife;
         System.out.println("我是一个橘子");
-        knife.cut();
     }
 }

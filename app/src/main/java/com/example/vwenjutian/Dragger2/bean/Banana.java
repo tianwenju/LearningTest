@@ -7,7 +7,17 @@ package com.example.vwenjutian.Dragger2.bean;
 public class Banana {
     private static final String TAG = "Banana";
 
+    private String from;
+
     public Banana() {
+
         System.out.println("这是Banana");
     }
+
+    public Banana(String from) {
+        this.from = from;
+        System.out.println("这是产自" + from + "的香蕉");
+    }
+
+
 }

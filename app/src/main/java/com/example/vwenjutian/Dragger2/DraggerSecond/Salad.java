@@ -7,16 +7,18 @@ import javax.inject.Inject;
  */
 
 public class Salad {
-    @Inject Knife knife;
     @Inject Orange orange;
 
     public Salad() {
         SaladComponet saladComponet = DaggerSaladComponet.create();
         saladComponet.inject(this);
-        makeSalad(knife, orange);
+        makeSalad(orange);
     }
 
-    private void makeSalad(Knife knife, Orange orange) {
+    public static void main(String[] args) {
+        new Salad();
+    }
+    private void makeSalad(Orange orange) {
         System.out.println("加了橘子的沙拉");
     }
 }

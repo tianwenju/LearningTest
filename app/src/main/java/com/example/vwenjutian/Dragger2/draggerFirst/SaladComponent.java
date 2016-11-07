@@ -1,8 +1,4 @@
 package com.example.vwenjutian.Dragger2.draggerFirst;
-import com.example.vwenjutian.Dragger2.bean.Banana;
-import com.example.vwenjutian.Dragger2.bean.Pear;
-import com.example.vwenjutian.Dragger2.bean.SaladSacue;
-
 import dagger.Component;
 
 /**
@@ -16,11 +12,9 @@ public interface  SaladComponent {
     //★注意：下面这三个方法也可以不写，但是如果要写，就按照这个格式来
     //但是当Component要被别的Component依赖时，
     //这里就必须写这个方法，不写代表不向别的Component暴露此依赖
-    Pear providePear();
-
-    Banana ProvideBanana();
-
-    SaladSacue provideSaladSauce();
+//    Pear providePear();
+//    Banana ProvideBanana();
+//    SaladSacue provideSaladSauce();
 
     //注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
     //这里我们把上面的三个依赖注入到Salad中
