@@ -8,16 +8,12 @@ import javax.inject.Named;
  */
 
 public class SaladSacue {
-    private static final String TAG = "SaladSacue";
 
     public SaladSacue() {
-
     }
-
-
     @Inject
     public SaladSacue(@Named("taste") String string) {
-        // Log.d(TAG, "SaladSacue() called");
         System.out.println("这是" + string + "SaladSacue");
+
     }
 }
