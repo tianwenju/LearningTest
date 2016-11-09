@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.vwenjutian.Dragger2">
+    package="com.example.vwenjutian.Dagger2">
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:name=".app.App"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.vwenjutian.Dragger2.MainActivity">
+        <activity android:name="com.example.vwenjutian.Dagger2.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

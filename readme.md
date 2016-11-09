@@ -18,7 +18,7 @@ Dagger是为Android和Java平台提供的一个完全静态的，在编译时进
 举个例子：我们在写面向对象程序时，往往会用到组合，即在一个类中引用另一个类，从而可以调用引用的类的方法完成某些功能,就像下面这样.
 
     public class ClassA {
-   
+  
     ClassB b;
    
     public ClassA() {
@@ -33,50 +33,56 @@ Dagger是为Android和Java平台提供的一个完全静态的，在编译时进
     }
 依赖注入的几种方式
 * 通过接口注入
+```
+interface ClassBInterface {
+        void setB(ClassB b);
+    }
 
-      interface ClassBInterface {
-      void setB(ClassB b);
-      }
-    
-      public class ClassA implements ClassBInterface {
-      ClassB classB;
-    
-      @override
-      void setB(ClassB b) {
-      classB = b;
-      }
-      }
+    public class ClassA implements ClassBInterface {
+        ClassB classB;
+        @override
+        void setB(ClassB b) {
+            classB = b;
+        }
+    }
+```
 * 通过set方法注入
+```
+public class ClassA {
+        ClassB classB;
 
-      public class ClassA {
-      ClassB classB;
-    
-      public void setClassB(ClassB b) {
-      classB = b;
-      }
-      }
+        public void setClassB(ClassB b) {
+            classB = b;
+        }
+    }
+```
 * 通过构造方法注入
+```
+ public class ClassA {
+        ClassB classB;
 
-      public class ClassA {
-      ClassB classB;
-    
-      public void ClassA(ClassB b) {
-      classB = b;
-      }
+        public void ClassA(ClassB b) {
+            classB = b;
+        }
+
+```
 * 通过Java注解
+```
+public class ClassA {
+//此时并不会完成注入，还需要依赖注入框架的支持，如RoboGuice,Dagger2
+       @inject
+        ClassB classB;
 
-      public class ClassA {
-      //此时并不会完成注入，还需要依赖注入框架的支持，如RoboGuice,Dagger2
-      @inject ClassB classB;
-    
-      ...
-      public ClassA() {}
+    }
+```
    在Dagger2中用的就是最后一种注入方式，通过注解的方式，将依赖注入到宿主类中
 ###注解
 参考:
 [深入理解Java：注解（Annotation）自定义注解入门](http://www.cnblogs.com/peida/archive/2013/04/24/3036689.html)
+
 [Java 注解 Dependency injection](http://www.jianshu.com/p/9b7982eb063f)
-「[深入Java」Annotation注解](http://www.jianshu.com/p/82093e5160ae)
+
+[深入Java Annotation注解](http://www.jianshu.com/p/82093e5160ae)
 ###dagger2的使用
 
 * 引入Dagger2
@@ -214,9 +220,9 @@ saladModule相当于工厂这里实例化了依赖类,Module管理所有的依�
     //★注意：下面这三个方法也可以不写，但是如果要写，就按照这个格式来
     //但是当Component要被别的Component依赖时，
     //这里就必须写这个方法，不写代表不向别的Component暴露此依赖
-    //Pear providePear();
-    //Banana ProvideBanana();
-    //SaladSacue provideSaladSauce();
+    Pear providePear();
+    Banana ProvideBanana();
+    SaladSacue provideSaladSauce();
     //注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
     //这里我们把上面的三个依赖注入到Salad中
     //因为我们要做沙拉
@@ -255,3 +261,237 @@ public class Salad {
 - 步骤3：若不存在创建类方法，则查找Inject注解的构造函数，看构造函数是否存在参数
  - 步骤3.1：若存在参数，则从步骤1开始依次初始化每个参数
  - 步骤3.2：若不存在参数，则直接初始化该类实例，一次依赖注入到此结束
+
+#####两个难点@Scope和@Qulifier
+上面把四个简单的注解的用法都讲完了，但很多时候这几个注解并不能涵盖我们所有的场景，这时就需要@Scope和@Qulifier来帮忙了。
+
+- @Qulifier
+有的同学可能在用Module的时候会有疑惑，为什么方法怎么命名都行，那时怎么区分它为谁提供依赖呢。答案是根据返回类型来确定的，当某个对象需要注入依赖时，Dagger2就会根据Module中标记了@Provide的方法的返回值来确定由谁为这个变量提供实例。那问题来了，如果有两个一样的返回类型，该用谁呢。我们把这种场景叫做依赖迷失，见名知意，Dagger这时候就不知道用谁来提供依赖，自然就迷失了。所以我们引入了@Qulifier这个东西，通过自定义Qulifier，可以告诉Dagger2去需找具体的依赖提供者。
+	- @Qualifier注解
+```
+@Qualifier
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Type {
+    String value() default "";
+}
+```
+	- 一个依赖类
+```
+public class Apple {
+    private String color;
+
+    public Apple() {
+
+        System.out.println("nomal ");
+    }
+
+    public Apple(String color) {
+        this.color = color;
+        System.out.println("color" + color);
+    }
+}
+```
+	- module
+```
+@Module
+public class SaladModule {
+    
+    @Singleton
+    @Type("nomal")
+    @Provides
+    public Apple providerNomalApple() {
+
+        return new Apple();
+    }
+
+    @Type("color")
+    @Provides
+    public Apple providerColorApple(String color) {
+
+        return new Apple(color);
+    }
+
+    //    由于我们的Apple构造函数里使用了String,所以这里要管理这个String(★否则报错)
+    //    int等基本数据类型是不需要这样做的
+    @Provides
+    public String providerString() {
+        return new String("red");
+    }
+}
+```
+	- component
+```
+@Singleton
+@Component(modules = SaladModule.class)
+public interface SaladComponent {
+//    @Type("nomal")
+//    Apple providerNonmalApple();
+//
+//    @Type("color")
+//    Apple providerColorApple();
+
+   // String providerString();
+    ////注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
+//这里我们把上面的三个依赖注入到Salad中
+    void inject(Salad salad);
+}
+```
+	- 目标类
+```
+public class Salad {
+    @Inject
+    @Type("nomal")
+    Apple nomalApple;
+    @Type("nomal")
+    @Inject
+    Apple nomalApple2;
+    @Type("color")
+    @Inject
+    Apple colorApple;
+    public Salad() {
+        SaladComponent saladComponent = DaggerSaladComponent.create();
+        saladComponent.inject(this);
+        System.out.println(nomalApple.hashCode()+"_______"+nomalApple2.hashCode());
+    }
+    public static void main(String[] args) {
+        new Salad();
+    }
+}
+```
+- @sope
+现在有这样的一个场景,tom和jason住在同一个房子里面,该怎么做呢
+	- 自定义@scope
+```
+@Scope
+@Retention(RetentionPolicy.RUNTIME)
+public @ interface HouseScope {
+}
+```
+	- 依赖类
+```
+public class House {
+    public House() {
+        System.out.print("这是个小刀");
+    }
+}
+```
+	- module
+```
+@Module
+public class HouseModule {
+
+    /**
+     * 指定knife的使用范围
+     *
+     * @return
+     */
+    @HouseScope
+    @Provides
+    public House providerHouse() {
+        return new House();
+    }
+}
+```
+	- component
+```
+@HouseScope
+@Component(modules = {HouseModule.class})
+public interface HouseComponent {
+    void inject(Tom tom);
+
+    void inject(Jason jason);
+}
+```
+	- 目标类
+```
+public class Jason {
+    @Inject
+    House house;
+    public Jason() {
+        App.getHouseComponent().inject(this);
+        System.out.println("Jason"+house.hashCode());
+    }
+}
+```
+```
+public class Tom {
+    @Inject
+    House house;
+    public Tom() {
+        App.getHouseComponent().inject(this);
+        System.out.println("Tom" + house.hashCode());
+    }
+}
+```
+结果:
+11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: 这是个小刀Jason1128505112
+11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: Tom1128505112
+说明是同一个对象
+参考 
+[解锁Dagger2使用姿势（二） 之带你理解@Scope](http://blog.csdn.net/u012702547/article/details/52213706)
+####component依赖
+如果我们有一套做好的沙拉体系（一套齐全的依赖体系，Module、Component），另外一个类需要这套依赖体系的一个对象作为依赖，怎么办，还需要再为这个对象，建立一套新的Module和Component吗
+**显然是不用的，Component之间是可以依赖的**
+- 外加依赖类
+```
+public class Tomato {
+    public Tomato() {
+        System.out.println("这是个西红柿");
+    }
+}
+```
+- module
+```
+@Module
+public class TomatoModule {
+    @Provides
+    public Tomato providerTomato() {
+        return new Tomato();
+    }
+}
+```
+- component
+```
+@Component(modules = TomatoModule.class, dependencies = {SaladComponent.class})
+public interface TomatoComponent {
+
+    /**
+     * 此处的方法可以不写.写了是为了暴露对象 给子依赖
+     *
+     * @return
+     */
+    public Tomato providerTomato();
+
+    /**
+     * 是否想注入那个对象中,如果不想注入的话可以不写
+     * @param salad
+     */
+      void inject(Salad salad);
+}
+```
+- 目标类
+```
+public class Salad {
+
+    @Inject
+    Tomato tomato;
+    @Inject
+    Banana banana;
+    @Inject
+    Pear pear;
+    @Inject
+    SaladSacue saladSacue;
+
+    public Salad() {
+        SaladComponent component =  DaggerSaladComponent.builder().saladModule(new SaladModule("菲律宾","苦的")).build();
+        DaggerTomatoComponent.builder().saladComponent(component).tomatoModule(new TomatoModule()).build().inject(this);
+
+    }
+
+    public static void main(String[] args) {
+        new Salad();
+    }
+}
+```
+源码传送 https://github.com/tianwenju/LearningTest
