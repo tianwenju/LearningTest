@@ -64,25 +64,23 @@ public class ClassA {
         public void ClassA(ClassB b) {
             classB = b;
         }
-
 ```
 * 通过Java注解
 ```
 public class ClassA {
-//此时并不会完成注入，还需要依赖注入框架的支持，如RoboGuice,Dagger2
-       @inject
-        ClassB classB;
-
+//此时并不会完成注入，还需要依赖注入框架的支持，如Dagger2
+      @inject
+      ClassB classB;
     }
 ```
    在Dagger2中用的就是最后一种注入方式，通过注解的方式，将依赖注入到宿主类中
 ###注解
 参考:
-[深入理解Java：注解（Annotation）自定义注解入门](http://www.cnblogs.com/peida/archive/2013/04/24/3036689.html)
+	[深入理解Java：注解（Annotation）自定义注解入门](http://www.cnblogs.com/peida/archive/2013/04/24/3036689.html)
 
-[Java 注解 Dependency injection](http://www.jianshu.com/p/9b7982eb063f)
+	[Java 注解 Dependency injection](http://www.jianshu.com/p/9b7982eb063f)
 
-[深入Java Annotation注解](http://www.jianshu.com/p/82093e5160ae)
+	[深入Java Annotation注解](http://www.jianshu.com/p/82093e5160ae)
 ###dagger2的使用
 
 * 引入Dagger2
@@ -132,57 +130,63 @@ public class ClassA {
 
 说了那么多前言，虽然这些注解都有各自独特的作用，单用起来其实很简单，接下来我们将进一步地讲解这些标注的作用，just show you code。在使用之前，只要大致明白这些标注的意义就行了，简单的依赖注入通过这几个标注就能完成。
 #####例子
-制作一盘美味的水果沙拉Salad。 
-Salad需要什么原料呢？ 
-需要梨（Pear）、香蕉（Banana）和沙拉酱 （SaladSauce） 
-我们就说Salad依赖Pear、Banana、 SaladSauce
+组装一台电脑。 
+电脑需要什么原料呢？ 
+需要显示器(Display)、键盘(keyboard)、主机(Master),也就是依赖
 1. 三个依赖类
+
 ```
-public class Pear {
-    private static final String TAG = "Pear";
-    public Pear() {
-       // Log.d(TAG, "Pear() called");
-        System.out.println("这是Pear");
+public class Display {
+    private static final String TAG = "Display";
+    public Display() {
+       // Log.d(TAG, "Display() called");
+        System.out.println("这是个显示器");
     }
 }
 ```
 ```
-public class Banana {
+public class keyboard {
+    private static final String TAG = "keyboard";
+
     private String from;
-    public Banana() {
-       System.out.println("这是Banana");
+
+    public keyboard() {
+
+        System.out.println("这是键盘");
     }
-    public Banana(String from) {
+
+    public keyboard(String from) {
         this.from = from;
-        System.out.println("这是产自" + from + "的香蕉");
+        System.out.println("这是产自" + from + "的键盘");
     }
+    
 }
+
 ```
 ```
-public class SaladSacue {
-  
-    public SaladSacue() {
+public class Master {
+    public Master() {
     }
     @Inject
-    public SaladSacue(@Named("taste") String string) {
-        System.out.println("这是" + string + "SaladSacue");
-
+    public Master(@Named("taste") String string) {
+        System.out.println("这是" + string + "Master");
     }
 }
 ```
-2. SaladModule  
+2. ComputerModule 管理原料的module  
 ```
 @Module
-public class SaladModule {
+public class ComputerModule {
+
     private String from;
-    // 按照格式写就好了，
-    // 返回值（被依赖的类类型）
-    // 方法名（provideXxx必须以provide开头，后面随意）
+
     private String taste;
+
     @Provides
-    public Pear providerPer() {
-        return new Pear();
+    public Display providerPer() {
+        return new Display();
     }
+
     @Provides
     public String providerString() {
         return from;
@@ -194,64 +198,68 @@ public class SaladModule {
         return taste;
     }
 
-    public SaladModule() {
+    public ComputerModule() {
     }
 
-    public SaladModule(String from, String taste) {
+    public ComputerModule(String from, String taste) {
         this.from = from;
         this.taste = taste;
     }
 
     @Provides
-    public Banana providerBananaFrom(String from) {
-        return new Banana(from);
+    public keyboard providerBananaFrom(String from) {
+        return new keyboard(from);
     }
+}
 ```
-saladModule相当于工厂这里实例化了依赖类,Module管理所有的依赖就好比：你要做一个沙拉，需要（依赖）Pear/Banana/SaladSauce
-这里就把Pear/Banana/SaladSauce这三个被依赖的类管理起来,方便你在之后获取Pear/Banana/SaladSauce的对象
+ComputerdModule相当于工厂这里实例化了依赖类,Module管理所有的依赖就好比：你要组装一台电脑需要键盘,显示器,主机原料,module生产并管理这些原料,给其他对象使用
 
-3. 增加一个接口SaladComponent
+
+3. 增加一个接口ComputerComponent
 ```
-    @Component(modules = {SaladModule.class})//指明要在那些Module里寻找依赖
-    public interface  SaladComponent {
-    
+ @Component(modules = {ComputerModule.class})//指明要在那些Module里寻找依赖
+public interface ComputerComponent {
     //注意：下面这三个方法，返回值必须是从上面指定的依赖库SaladModule.class中取得的对象
     //注意：而方法名不一致也行，但是方便阅读，建议一致，因为它主要是根据返回值类型来找依赖的
     //★注意：下面这三个方法也可以不写，但是如果要写，就按照这个格式来
     //但是当Component要被别的Component依赖时，
     //这里就必须写这个方法，不写代表不向别的Component暴露此依赖
-    Pear providePear();
-    Banana ProvideBanana();
-    SaladSacue provideSaladSauce();
+    Display sprovideDisplay();
+
+    keyboard ProvidekeyBoard();
+
+    Master provideMaster();
     //注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
-    //这里我们把上面的三个依赖注入到Salad中
+    //这里我们把上面的三个依赖注入到Computer中
     //因为我们要做沙拉
-    void inject(Salad salad);
-    }
+    void inject(Computer computer);
+}
 ```
-4. 目标类 salad
+ComputerComponent就像工厂管理员,高度目标类我有那些原料.并把这些原料运送给目标类.
+4. 目标类 Computer
 ```
-public class Salad {
+public class Computer {
     @Inject
-    Pear pear;
+    Display display;
     @Inject
-    Banana banana;
+    keyboard keyboard;
     @Inject
-    SaladSacue saladSacue;
-    public Salad() {
-        // DaggerSaladComponent.create().inject(this);
-        DaggerSaladComponent.builder().saladModule(new SaladModule("菲律宾","苦的")).build().inject(this);
-        makeSalad(banana, pear, saladSacue);
+    Master master;
+    public Computer() {
+        // DaggerComputerComponent.create().inject(this);
+        DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","联想")).build().inject(this);
+        makeComputer(keyboard, display, master);
     }
-    private void makeSalad(Banana banana, Pear pear, SaladSacue saladSacue) {
+    private void makeComputer(keyboard keyboard, Display display, Master master) {
         System.out.println("制造完成");
     }
     public static void main(String[] args) {
-        new Salad();
+        new Computer();
     }
 }
 ```
-> 注意: DaggerSaladComponent是编译后有gradle插件[apt](http://www.jianshu.com/p/2494825183c5)生成的类路径:app/build/generated/source/apt文件夹下
+目标类就是要成品电脑,在这组装完成.
+> 注意:DaggerComputerComponent是编译后有gradle插件[apt](http://www.jianshu.com/p/2494825183c5)生成的类路径:app/build/generated/source/apt文件夹下,其中若coputerModule(new conputerModule()),如果没有参数的话可以直接DaggerComputerComponent.create().inject(this);
 
 **查找过程**
 - 步骤1：查找Module中是否存在创建该类的方法。 
@@ -261,6 +269,173 @@ public class Salad {
 - 步骤3：若不存在创建类方法，则查找Inject注解的构造函数，看构造函数是否存在参数
  - 步骤3.1：若存在参数，则从步骤1开始依次初始化每个参数
  - 步骤3.2：若不存在参数，则直接初始化该类实例，一次依赖注入到此结束
+
+**源码分析**
+咱们从上面知道SaladComponent是个接口,具体实现是有apt生成的类DaggerSaladComponent来实现.
+* DaggerSaladComponent
+**变量**
+```
+private Provider<Display> providerDisplayProvider;
+
+  private Provider<String> providerStringProvider;
+
+  private Provider<keyboard> providerkeyboardFromProvider;
+
+  private Provider<String> providerStringtasteProvider;
+
+  private Provider<Master> masterProvider;
+
+  private MembersInjector<Computer> computerMembersInjector;//这个是注入类也就是inject(this)的时候调用的对象
+```
+Provider<T>是什么呢
+```
+public interface Provider<T> {
+
+    /**
+     * Provides a fully-constructed and injected instance of {@code T}.
+     *
+     * @throws RuntimeException if the injector encounters an error while
+     *  providing an instance. For example, if an injectable member on
+     *  {@code T} throws an exception, the injector may wrap the exception
+     *  and throw it to the caller of {@code get()}. Callers should not try
+     *  to handle such exceptions as the behavior may vary across injector
+     *  implementations and even different configurations of the same injector.
+     */
+    T get();
+}
+```
+由上面可以看出Modul中注解了Provider的方法都会生成 Provider<T> 的变量对象,那它们是在哪里初始化的呢,还记得我们怎么获得DaggerComputerComponent吗:**  DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","联想")).build().inject(this);**,其中 DaggerSaladComponent.builder().saladModule(new SaladModule("菲律宾","苦的")).build()会调用
+**初始化**
+```
+ @SuppressWarnings("unchecked")
+  private void initialize(final Builder builder) {
+
+    this.providerDisplayProvider =
+        ComputerModule_ProviderDisplayFactory.create(builder.computerModule);
+
+    this.providerStringProvider =
+        ComputerModule_ProviderStringFactory.create(builder.computerModule);
+
+    this.providerkeyboardFromProvider =
+        ComputerModule_ProviderkeyboardFromFactory.create(
+            builder.computerModule, providerStringProvider);
+
+    this.providerStringtasteProvider =
+        ComputerModule_ProviderStringtasteFactory.create(builder.computerModule);
+
+    this.masterProvider = Master_Factory.create(providerStringtasteProvider);
+
+    this.computerMembersInjector =
+        Computer_MembersInjector.create(
+            providerDisplayProvider, providerkeyboardFromProvider, masterProvider);
+  }
+```
+此时我们发现每个provider都是有一个Factory,Create出来,我们拿 ComputerModule_ProviderDisplayFactory为例,看源码
+```
+public final class ComputerModule_ProviderDisplayFactory implements Factory<Display> {
+  private final ComputerModule module;
+
+  public ComputerModule_ProviderDisplayFactory(ComputerModule module) {
+    assert module != null;
+    this.module = module;
+  }
+
+  @Override
+  public Display get() {
+    return Preconditions.checkNotNull(
+        module.providerDisplay(), "Cannot return null from a non-@Nullable @Provides method");
+  }
+
+  public static Factory<Display> create(ComputerModule module) {
+    return new ComputerModule_ProviderDisplayFactory(module);
+  }
+}
+```
+此时我们发现该对象里面有个ComputerModule对象,我们又发现里面有个get方法是Factory<Display>的父类方法
+```
+public interface Factory<T> extends Provider<T> {
+}
+public interface Provider<T> {
+
+    /**
+     * Provides a fully-constructed and injected instance of {@code T}.
+     *
+     * @throws RuntimeException if the injector encounters an error while
+     *  providing an instance. For example, if an injectable member on
+     *  {@code T} throws an exception, the injector may wrap the exception
+     *  and throw it to the caller of {@code get()}. Callers should not try
+     *  to handle such exceptions as the behavior may vary across injector
+     *  implementations and even different configurations of the same injector.
+     */
+    T get();
+}
+``` 
+而Factory又是继承Provider,我们发现通过这个Provider我们可以拿T也就是Provider<Display>的Dispaly对象.那么他是怎么注入到Computer中的呢??
+我们再看看DaggerComputerComponent的inject(this)方法
+```
+ @Override
+  public void inject(Computer computer) {
+    computerMembersInjector.injectMembers(computer);
+  }
+```
+computerMembersInjector也就是我们刚开始看到的那个变量,从上面初始化也就是
+```
+this.computerMembersInjector =
+        Computer_MembersInjector.create(
+            providerDisplayProvider, providerkeyboardFromProvider, masterProvider);
+```
+传入了三个providerDisplayProvider, providerkeyboardFromProvider, masterProvider,那么Computer_MembersInjector是什么呢
+```
+public final class Computer_MembersInjector implements MembersInjector<Computer> {
+  private final Provider<Display> displayProvider;
+
+  private final Provider<keyboard> keyboardProvider;
+
+  private final Provider<Master> masterProvider;
+
+  public Computer_MembersInjector(
+      Provider<Display> displayProvider,
+      Provider<keyboard> keyboardProvider,
+      Provider<Master> masterProvider) {
+    assert displayProvider != null;
+    this.displayProvider = displayProvider;
+    assert keyboardProvider != null;
+    this.keyboardProvider = keyboardProvider;
+    assert masterProvider != null;
+    this.masterProvider = masterProvider;
+  }
+
+  public static MembersInjector<Computer> create(
+      Provider<Display> displayProvider,
+      Provider<keyboard> keyboardProvider,
+      Provider<Master> masterProvider) {
+    return new Computer_MembersInjector(displayProvider, keyboardProvider, masterProvider);
+  }
+
+  @Override
+  public void injectMembers(Computer instance) {
+    if (instance == null) {
+      throw new NullPointerException("Cannot inject members into a null reference");
+    }
+    instance.display = displayProvider.get();
+    instance.keyboard = keyboardProvider.get();
+    instance.master = masterProvider.get();
+  }
+
+  public static void injectDisplay(Computer instance, Provider<Display> displayProvider) {
+    instance.display = displayProvider.get();
+  }
+
+  public static void injectKeyboard(Computer instance, Provider<keyboard> keyboardProvider) {
+    instance.keyboard = keyboardProvider.get();
+  }
+
+  public static void injectMaster(Computer instance, Provider<Master> masterProvider) {
+    instance.master = masterProvider.get();
+  }
+}
+```
+也就是Computer_MembersInjector中有了这三个Provider,在调用方法injectMembers的时候通过provider的get方法拿到了Dispaly对象,然后又赋值了给instance.display,instance是什么鬼,从传入的参数我们大喜,发现这就是那个inject(this),也就是目标类,也就是完成了computer中的Dispay的初始化,但要注意因为是对象直接辅助所有在目标类注入的对象都不能写成private.原理也就讲完了.
 
 #####两个难点@Scope和@Qulifier
 上面把四个简单的注解的用法都讲完了，但很多时候这几个注解并不能涵盖我们所有的场景，这时就需要@Scope和@Qulifier来帮忙了。
@@ -278,15 +453,15 @@ public @interface Type {
 ```
 	- 一个依赖类
 ```
-public class Apple {
+public class Mouse {
     private String color;
 
-    public Apple() {
+    public Mouse() {
 
         System.out.println("nomal ");
     }
 
-    public Apple(String color) {
+    public Mouse(String color) {
         this.color = color;
         System.out.println("color" + color);
     }
@@ -295,23 +470,20 @@ public class Apple {
 	- module
 ```
 @Module
-public class SaladModule {
-    
+public class ComputerTestModule {
     @Singleton
     @Type("nomal")
     @Provides
-    public Apple providerNomalApple() {
+    public Mouse providerNomalApple() {
 
-        return new Apple();
+        return new Mouse();
     }
-
     @Type("color")
     @Provides
-    public Apple providerColorApple(String color) {
+    public Mouse providerColorApple(String color) {
 
-        return new Apple(color);
+        return new Mouse(color);
     }
-
     //    由于我们的Apple构造函数里使用了String,所以这里要管理这个String(★否则报错)
     //    int等基本数据类型是不需要这样做的
     @Provides
@@ -323,40 +495,54 @@ public class SaladModule {
 	- component
 ```
 @Singleton
-@Component(modules = SaladModule.class)
-public interface SaladComponent {
+@Component(modules = ComputerTestModule.class)
+public interface ComputerTestComponent {
 //    @Type("nomal")
-//    Apple providerNonmalApple();
+//    Mouse providerNonmalApple();
 //
 //    @Type("color")
-//    Apple providerColorApple();
-
+//    Mouse providerColorApple();
    // String providerString();
     ////注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
 //这里我们把上面的三个依赖注入到Salad中
-    void inject(Salad salad);
+    void inject(ComputerTest computerTest);
 }
 ```
 	- 目标类
 ```
-public class Salad {
+public class ComputerTest {
     @Inject
     @Type("nomal")
-    Apple nomalApple;
+    Mouse nomalMouse;
+
     @Type("nomal")
     @Inject
-    Apple nomalApple2;
+    Mouse nomalMouse2;
+
     @Type("color")
     @Inject
-    Apple colorApple;
-    public Salad() {
-        SaladComponent saladComponent = DaggerSaladComponent.create();
-        saladComponent.inject(this);
-        System.out.println(nomalApple.hashCode()+"_______"+nomalApple2.hashCode());
+    Mouse colorMouse;
+
+    public ComputerTest() {
+        ComputerTestComponent computerTestComponent = DaggerComputerTestComponent.create();
+        computerTestComponent.inject(this);
+        System.out.println(nomalMouse.hashCode()+"_______"+ nomalMouse2.hashCode());
     }
+
     public static void main(String[] args) {
-        new Salad();
+        new ComputerTest();
     }
+}
+```
+因为在moudle中进行查找的时候是根据返回值进行查找,所以通过type我们可以区分不同的方法,也可以通过@name进行判别也可以在参数中判别详见电脑组装的Master
+@name的api其是有@Qualifier注解
+```
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+public @interface Named {
+    /** The name. */
+    String value() default "";
 }
 ```
 - @sope
@@ -372,7 +558,7 @@ public @ interface HouseScope {
 ```
 public class House {
     public House() {
-        System.out.print("这是个小刀");
+        System.out.print("这是个房子");
     }
 }
 ```
@@ -382,7 +568,7 @@ public class House {
 public class HouseModule {
 
     /**
-     * 指定knife的使用范围
+     * 指定房子的使用范围
      *
      * @return
      */
@@ -425,49 +611,49 @@ public class Tom {
 }
 ```
 结果:
-11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: 这是个小刀Jason1128505112
+11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: 这是个房子Jason1128505112
 11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: Tom1128505112
-说明是同一个对象
+初始化一次说明是同一个对象 
 参考 
 [解锁Dagger2使用姿势（二） 之带你理解@Scope](http://blog.csdn.net/u012702547/article/details/52213706)
 ####component依赖
 如果我们有一套做好的沙拉体系（一套齐全的依赖体系，Module、Component），另外一个类需要这套依赖体系的一个对象作为依赖，怎么办，还需要再为这个对象，建立一套新的Module和Component吗
 **显然是不用的，Component之间是可以依赖的**
-- 外加依赖类
+- 依赖类
 ```
-public class Tomato {
-    public Tomato() {
-        System.out.println("这是个西红柿");
+public class Audio {
+
+    public Audio() {
+        System.out.println("这是个音响");
     }
 }
 ```
 - module
 ```
 @Module
-public class TomatoModule {
+public class AudioModule {
     @Provides
-    public Tomato providerTomato() {
-        return new Tomato();
+    public Audio providerTomato() {
+        return new Audio();
     }
 }
 ```
 - component
 ```
-@Component(modules = TomatoModule.class, dependencies = {SaladComponent.class})
-public interface TomatoComponent {
-
+@Component(modules = AudioModule.class, dependencies = {ComputerComponent.class})
+public interface AudioComponent {
     /**
      * 此处的方法可以不写.写了是为了暴露对象 给子依赖
      *
      * @return
      */
-    public Tomato providerTomato();
+    public Audio providerTomato();
 
     /**
      * 是否想注入那个对象中,如果不想注入的话可以不写
-     * @param salad
+     * @param computer2
      */
-      void inject(Salad salad);
+      void inject(Computer2 computer2);
 }
 ```
 - 目标类

@@ -7,13 +7,13 @@ import javax.inject.Named;
  * Created by V.Wenju.Tian on 2016/10/28.
  */
 
-public class SaladSacue {
+public class Master {
 
-    public SaladSacue() {
+    public Master() {
     }
     @Inject
-    public SaladSacue(@Named("taste") String string) {
-        System.out.println("这是" + string + "SaladSacue");
+    public Master(@Named("taste") String string) {
+        System.out.println("这是" + string + "Master");
 
     }
 }

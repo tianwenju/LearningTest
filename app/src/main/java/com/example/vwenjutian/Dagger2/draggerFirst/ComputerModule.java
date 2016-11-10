@@ -1,7 +1,7 @@
 package com.example.vwenjutian.Dagger2.draggerFirst;
 
-import com.example.vwenjutian.Dagger2.bean.Banana;
-import com.example.vwenjutian.Dagger2.bean.Pear;
+import com.example.vwenjutian.Dagger2.bean.Display;
+import com.example.vwenjutian.Dagger2.bean.keyboard;
 
 import javax.inject.Named;
 
@@ -10,9 +10,9 @@ import dagger.Provides;
 
 /**
  * Module管理所有的依赖
- * 就好比：你要做一个沙拉，需要（依赖）Pear/Banana/SaladSauce
- * 这里就把Pear/Banana/SaladSauce这三个被依赖的类管理起来
- * 方便你在之后获取Pear/Banana/SaladSauce的对象
+ * 就好比：你要做一个沙拉，需要（依赖）Display/keyboard/SaladSauce
+ * 这里就把Pear/keyboard/SaladSauce这三个被依赖的类管理起来
+ * 方便你在之后获取Pear/keyboard/SaladSauce的对象
  *
  * ----------------------------------------------------------
  * 步骤:
@@ -33,15 +33,15 @@ import dagger.Provides;
  */
 
 @Module
-public class SaladModule {
+public class ComputerModule {
 
     private String from;
 
     private String taste;
 
     @Provides
-    public Pear providerPer() {
-        return new Pear();
+    public Display providerDisplay() {
+        return new Display();
     }
 
     @Provides
@@ -55,18 +55,16 @@ public class SaladModule {
         return taste;
     }
 
-    public SaladModule() {
+    public ComputerModule() {
     }
 
-    public SaladModule(String from, String taste) {
+    public ComputerModule(String from, String taste) {
         this.from = from;
         this.taste = taste;
     }
 
     @Provides
-    public Banana providerBananaFrom(String from) {
-        return new Banana(from);
+    public keyboard providerkeyboardFrom(String from) {
+        return new keyboard(from);
     }
-
-
 }

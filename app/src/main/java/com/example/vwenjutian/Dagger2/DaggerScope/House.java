@@ -6,6 +6,6 @@ package com.example.vwenjutian.Dagger2.DaggerScope;
 
 public class House {
     public House() {
-        System.out.print("这是个小刀");
+        System.out.print("这是个房子");
     }
 }

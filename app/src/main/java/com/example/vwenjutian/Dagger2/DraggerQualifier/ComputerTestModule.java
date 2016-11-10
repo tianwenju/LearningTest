@@ -10,22 +10,22 @@ import dagger.Provides;
  */
 
 @Module
-public class SaladModule {
+public class ComputerTestModule {
 
 
     @Singleton
     @Type("nomal")
     @Provides
-    public Apple providerNomalApple() {
+    public Mouse providerNomalApple() {
 
-        return new Apple();
+        return new Mouse();
     }
 
     @Type("color")
     @Provides
-    public Apple providerColorApple(String color) {
+    public Mouse providerColorApple(String color) {
 
-        return new Apple(color);
+        return new Mouse(color);
     }
 
     //    由于我们的Apple构造函数里使用了String,所以这里要管理这个String(★否则报错)

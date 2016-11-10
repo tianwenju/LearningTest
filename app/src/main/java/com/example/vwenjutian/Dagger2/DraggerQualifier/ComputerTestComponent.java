@@ -8,18 +8,18 @@ import dagger.Component;
  * Created by V.Wenju.Tian on 2016/10/31.
  */
 @Singleton
-@Component(modules = SaladModule.class)
-public interface SaladComponent {
+@Component(modules = ComputerTestModule.class)
+public interface ComputerTestComponent {
 
 
 //    @Type("nomal")
-//    Apple providerNonmalApple();
+//    Mouse providerNonmalApple();
 //
 //    @Type("color")
-//    Apple providerColorApple();
+//    Mouse providerColorApple();
 
    // String providerString();
     ////注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
 //这里我们把上面的三个依赖注入到Salad中
-    void inject(Salad salad);
+    void inject(ComputerTest computerTest);
 }

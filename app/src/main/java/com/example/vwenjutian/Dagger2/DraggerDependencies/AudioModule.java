@@ -8,13 +8,12 @@ import dagger.Provides;
  */
 
 @Module
-public class TomatoModule {
+public class AudioModule {
 
 
     @Provides
-    public Tomato providerTomato() {
-        return new Tomato();
+    public Audio providerTomato() {
+        return new Audio();
     }
-
 
 }

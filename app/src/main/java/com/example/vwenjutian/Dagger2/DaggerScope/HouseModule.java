@@ -10,7 +10,7 @@ import dagger.Provides;
 public class HouseModule {
 
     /**
-     * 指定knife的使用范围
+     * 指定House的使用范围
      *
      * @return
      */
