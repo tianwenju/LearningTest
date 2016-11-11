@@ -25,7 +25,7 @@ public class Computer2 {
     Master master;
 
     public Computer2() {
-        ComputerComponent component =  DaggerComputerComponent.builder().computerModule(new ComputerModule("菲律宾","苦的")).build();
+        ComputerComponent component =  DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","台达")).build();
         DaggerAudioComponent.builder().computerComponent(component).audioModule(new AudioModule()).build().inject(this);
 
     }
