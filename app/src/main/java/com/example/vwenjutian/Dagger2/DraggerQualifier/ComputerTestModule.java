@@ -16,14 +16,14 @@ public class ComputerTestModule {
     @Singleton
     @Type("nomal")
     @Provides
-    public Mouse providerNomalApple() {
+    public Mouse providerNomalMouse() {
 
         return new Mouse();
     }
 
     @Type("color")
     @Provides
-    public Mouse providerColorApple(String color) {
+    public Mouse providerColorMouse(String color) {
 
         return new Mouse(color);
     }

@@ -517,46 +517,54 @@ computerMembersInjector也就是我们刚开始看到的那个变量,从上面�
 - module
 
 
-        @Module
-        public class ComputerTestModule {
-            @Singleton
-            @Type("nomal")
-            @Provides
-            public Mouse providerNomalApple() {
-        
-                return new Mouse();
-            }
-            @Type("color")
-            @Provides
-            public Mouse providerColorApple(String color) {
-        
-                return new Mouse(color);
-            }
-            //    由于我们的Apple构造函数里使用了String,所以这里要管理这个String(★否则报错)
-            //    int等基本数据类型是不需要这样做的
-            @Provides
-            public String providerString() {
-                return new String("red");
-            }
+       @Module
+    public class ComputerTestModule {
+    
+    
+        @Singleton
+        @Type("nomal")
+        @Provides
+        public Mouse providerNomalMouse() {
+    
+            return new Mouse();
         }
+    
+        @Type("color")
+        @Provides
+        public Mouse providerColorMouse(String color) {
+    
+            return new Mouse(color);
+        }
+    
+        //    由于我们的Apple构造函数里使用了String,所以这里要管理这个String(★否则报错)
+        //    int等基本数据类型是不需要这样做的
+        @Provides
+        public String providerString() {
+            return new String("red");
+        }
+    }
+
 
 
 - component
 
-
-        @Singleton
-        @Component(modules = ComputerTestModule.class)
-        public interface ComputerTestComponent {
-        //    @Type("nomal")
-        //    Mouse providerNonmalApple();
-        //
-        //    @Type("color")
-        //    Mouse providerColorApple();
-           // String providerString();
-            ////注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
-        //这里我们把上面的三个依赖注入到Salad中
-            void inject(ComputerTest computerTest);
-        }
+    
+          @Singleton
+    @Component(modules = ComputerTestModule.class)
+    public interface ComputerTestComponent {
+    
+    
+    //    @Type("nomal")
+    //    Mouse providerNonmalMouse();
+    //
+    //    @Type("color")
+    //    Mouse providerColorMouse();
+    
+       // String providerString();
+        ////注意：下面的这个方法，表示要将以上的三个依赖注入到某个类中
+    //这里我们把上面的三个依赖注入到Salad中
+        void inject(ComputerTest computerTest);
+    }
         
         
 - 目标类
@@ -599,8 +607,46 @@ computerMembersInjector也就是我们刚开始看到的那个变量,从上面�
             String value() default "";
         }
 
+#####原理:
+主要类:DaggerComputerTestComponent
+```
+   @SuppressWarnings("unchecked")
+  private void initialize(final Builder builder) {
 
+    this.providerNomalHouseProvider =
+        DoubleCheck.provider(
+            ComputerTestModule_ProviderNomalHouseFactory.create(builder.computerTestModule));
 
+    this.providerStringProvider =
+        ComputerTestModule_ProviderStringFactory.create(builder.computerTestModule);
+
+    this.providerColorHouseProvider =
+        ComputerTestModule_ProviderColorHouseFactory.create(
+            builder.computerTestModule, providerStringProvider);
+
+    this.computerTestMembersInjector =
+        ComputerTest_MembersInjector.create(providerNomalHouseProvider, providerColorHouseProvider);
+  }
+```
+我们发现填了不同的Qualifier的注解生成了两个不同的factory.   ComputerTestModule_ProviderNomalHouseFactory,this.providerColorHouseProvider ,传入的参数也不一样,再注入对象赋值时候
+```
+ this.computerTestMembersInjector =
+        ComputerTest_MembersInjector.create(providerNomalHouseProvider, providerColorHouseProvider);
+```
+传入了两个关于Mouse不同的Provider,也就是两个不同的对象.
+注入方法:
+```
+ @Override
+  public void injectMembers(ComputerTest instance) {
+    if (instance == null) {
+      throw new NullPointerException("Cannot inject members into a null reference");
+    }
+    instance.nomalMouse = nomalMouseAndNomalMouse2Provider.get();
+    instance.nomalMouse2 = nomalMouseAndNomalMouse2Provider.get();
+    instance.colorMouse = colorMouseProvider.get();
+  }
+```
+所以结果就是两个不同的Mouse.
 #### @scope
 
 现在有这样的一个场景,tom和jason住在同一个房子里面,该怎么做呢,这时候就需要自定义注解scope
@@ -701,7 +747,47 @@ computerMembersInjector也就是我们刚开始看到的那个变量,从上面�
 11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: 这是个房子Jason1128505112
 11-10 00:28:06.353 24783-24783/com.example.vwenjutian.learningtest I/System.out: Tom1128505112
 初始化一次说明是同一个对象 ,也就是他们住的是同一个房间
+##### 原理:
+主要类: DaggerHouseComponent
+实例化
+    private void initialize(final Builder builder) {
+    
+    this.providerHouseProvider =
+            DoubleCheck.provider(HouseModule_ProviderHouseFactory.create(builder.houseModule));
+    
+        this.tomMembersInjector = Tom_MembersInjector.create(providerHouseProvider);
+    
+        this.jasonMembersInjector = Jason_MembersInjector.create(providerHouseProvider);
+      }
+我们可以看到create方法传的是同一个Provider,看Tom_MembersInjector
+```
+ public static MembersInjector<Tom> create(Provider<House> houseProvider) {
+    return new Tom_MembersInjector(houseProvider);
+  }
 
+  @Override
+  public void injectMembers(Tom instance) {
+    if (instance == null) {
+      throw new NullPointerException("Cannot inject members into a null reference");
+    }
+    instance.house = houseProvider.get();
+  }
+```
+看Jason_MembersInjector
+```
+  public static MembersInjector<Jason> create(Provider<House> houseProvider) {
+    return new Jason_MembersInjector(houseProvider);
+  }
+
+  @Override
+  public void injectMembers(Jason instance) {
+    if (instance == null) {
+      throw new NullPointerException("Cannot inject members into a null reference");
+    }
+    instance.house = houseProvider.get();
+  }
+```
+他们操作的是同一个houseProvider,那么拿到的House对象也就是同一个对象.
 >参考 
 
 [解锁Dagger2使用姿势（二） 之带你理解@Scope](http://blog.csdn.net/u012702547/article/details/52213706)
@@ -774,4 +860,70 @@ public class Computer2 {
 }
 
 ```
+##### 原理:
+关键类DaggerAudioComponent
+- 初始化
+```
+ @SuppressWarnings("unchecked")
+  private void initialize(final Builder builder) {
+
+    this.providerTomatoProvider = AudioModule_ProviderTomatoFactory.create(builder.audioModule);
+
+    this.ProvidekeyBoardProvider =
+        new Factory<keyboard>() {
+          private final ComputerComponent computerComponent = builder.computerComponent;
+
+          @Override
+          public keyboard get() {
+            return Preconditions.checkNotNull(
+                computerComponent.ProvidekeyBoard(),
+                "Cannot return null from a non-@Nullable component method");
+          }
+        };
+
+    this.sprovideDisplayProvider =
+        new Factory<Display>() {
+          private final ComputerComponent computerComponent = builder.computerComponent;
+
+          @Override
+          public Display get() {
+            return Preconditions.checkNotNull(
+                computerComponent.sprovideDisplay(),
+                "Cannot return null from a non-@Nullable component method");
+          }
+        };
+
+    this.provideMasterProvider =
+        new Factory<Master>() {
+          private final ComputerComponent computerComponent = builder.computerComponent;
+
+          @Override
+          public Master get() {
+            return Preconditions.checkNotNull(
+                computerComponent.provideMaster(),
+                "Cannot return null from a non-@Nullable component method");
+          }
+        };
+
+    this.computer2MembersInjector =
+        Computer2_MembersInjector.create(
+            providerTomatoProvider,
+            ProvidekeyBoardProvider,
+            sprovideDisplayProvider,
+            provideMasterProvider);
+  }
+```
+我们知道keyboard,display,master都是有computerComponent这个管理员提供的,所以初始化复制的时候需要一个computerComponent,他是从哪里来的呢?我们以Master为例,从上可以看出
+是从builder.computerComponent中传过来的,还记得我们目标类中的
+```
+DaggerAudioComponent.builder().computerComponent(component).audioModule(new AudioModule()).build().inject(this);
+```
+我们发现个computerComponent(component)方法 ,看源码
+```
+  public Builder computerComponent(ComputerComponent computerComponent) {
+      this.computerComponent = Preconditions.checkNotNull(computerComponent);
+      return this;
+    }
+```
+恍然大悟,原来是通过这个方法传进来的,那么现在我有了这个computerComponent,那么我们就拿到了这个他里面的原材料注入进去赋值就行了.
 源码传送 https://github.com/tianwenju/LearningTest

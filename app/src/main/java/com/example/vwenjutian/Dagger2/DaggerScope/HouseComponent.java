@@ -9,6 +9,5 @@ import dagger.Component;
 @Component(modules = {HouseModule.class})
 public interface HouseComponent {
     void inject(Tom tom);
-
     void inject(Jason jason);
 }
