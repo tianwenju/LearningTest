@@ -180,45 +180,44 @@ Dagger是为Android和Java平台提供的一个完全静态的，在编译时进
             }
         }
 2. ComputerModule 管理原料的module  
+```
+@Module
+public class ComputerModule {
 
-        @Module
-        public class ComputerModule {
-        
-            private String from;
-        
-            private String taste;
-        
-            @Provides
-            public Display providerPer() {
-                return new Display();
-            }
-        
-            @Provides
-            public String providerString() {
-                return from;
-            }
-        
-            @Named("taste")
-            @Provides
-            public String providerStringtaste() {
-                return taste;
-            }
-        
-            public ComputerModule() {
-            }
-        
-            public ComputerModule(String from, String taste) {
-                this.from = from;
-                this.taste = taste;
-            }
-        
-            @Provides
-            public keyboard providerBananaFrom(String from) {
-                return new keyboard(from);
-            }
-        }
-        
-        
+    private String from;
+
+    private String taste;
+
+    @Provides
+    public Display providerDisplay() {
+        return new Display();
+    }
+
+    @Provides
+    public String providerString() {
+        return from;
+    }
+
+    @Named("taste")
+    @Provides
+    public String providerStringtaste() {
+        return taste;
+    }
+
+    public ComputerModule() {
+    }
+
+    public ComputerModule(String from, String taste) {
+        this.from = from;
+        this.taste = taste;
+    }
+
+    @Provides
+    public keyboard providerkeyboardFrom(String from) {
+        return new keyboard(from);
+    }
+}
+```       
 ComputerdModule相当于工厂这里实例化了==依赖类==,Module管理所有的依赖就好比：你要组装一台电脑需要键盘,显示器,主机原料,module生产并管理这些原料,给其他对象使用
 
 
