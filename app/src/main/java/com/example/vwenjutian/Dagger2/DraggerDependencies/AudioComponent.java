@@ -16,7 +16,7 @@ public interface AudioComponent {
      *
      * @return
      */
-    public Audio providerTomato();
+    public Audio providerAudio();
 
     /**
      * 是否想注入那个对象中,如果不想注入的话可以不写

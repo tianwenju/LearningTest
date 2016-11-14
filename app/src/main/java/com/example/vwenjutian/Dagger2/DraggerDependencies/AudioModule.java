@@ -12,7 +12,7 @@ public class AudioModule {
 
 
     @Provides
-    public Audio providerTomato() {
+    public Audio providerAudio() {
         return new Audio();
     }
 

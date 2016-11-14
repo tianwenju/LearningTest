@@ -811,22 +811,26 @@ public class Audio {
 ```
 @Module
 public class AudioModule {
+
+
     @Provides
-    public Audio providerTomato() {
+    public Audio providerAudio() {
         return new Audio();
     }
+
 }
 ```
 - component
 ```
-@Component(modules = AudioModule.class, dependencies = {ComputerComponent.class})
+Component(modules = AudioModule.class, dependencies = {ComputerComponent.class})
 public interface AudioComponent {
+
     /**
      * 此处的方法可以不写.写了是为了暴露对象 给子依赖
      *
      * @return
      */
-    public Audio providerTomato();
+    public Audio providerAudio();
 
     /**
      * 是否想注入那个对象中,如果不想注入的话可以不写
@@ -834,6 +838,7 @@ public interface AudioComponent {
      */
       void inject(Computer2 computer2);
 }
+
 ```
 - 目标类
 ```
@@ -867,7 +872,7 @@ public class Computer2 {
  @SuppressWarnings("unchecked")
   private void initialize(final Builder builder) {
 
-    this.providerTomatoProvider = AudioModule_ProviderTomatoFactory.create(builder.audioModule);
+    this.providerAudioProvider = AudioModule_ProviderAudioFactory.create(builder.audioModule);
 
     this.ProvidekeyBoardProvider =
         new Factory<keyboard>() {
@@ -907,11 +912,12 @@ public class Computer2 {
 
     this.computer2MembersInjector =
         Computer2_MembersInjector.create(
-            providerTomatoProvider,
+            providerAudioProvider,
             ProvidekeyBoardProvider,
             sprovideDisplayProvider,
             provideMasterProvider);
   }
+
 ```
 我们知道keyboard,display,master都是有computerComponent这个管理员提供的,所以初始化复制的时候需要一个computerComponent,他是从哪里来的呢?我们以Master为例,从上可以看出
 是从builder.computerComponent中传过来的,还记得我们目标类中的
@@ -926,4 +932,5 @@ DaggerAudioComponent.builder().computerComponent(component).audioModule(new Audi
     }
 ```
 恍然大悟,原来是通过这个方法传进来的,那么现在我有了这个computerComponent,那么我们就拿到了这个他里面的原材料注入进去赋值就行了.
+
 源码传送 https://github.com/tianwenju/LearningTest
