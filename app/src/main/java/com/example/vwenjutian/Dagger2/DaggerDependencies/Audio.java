@@ -1,4 +1,4 @@
-package com.example.vwenjutian.Dagger2.DraggerDependencies;
+package com.example.vwenjutian.Dagger2.DaggerDependencies;
 
 /**
  * Created by V.Wenju.Tian on 2016/10/31.

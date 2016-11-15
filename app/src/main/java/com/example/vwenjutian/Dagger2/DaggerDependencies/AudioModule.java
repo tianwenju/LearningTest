@@ -1,4 +1,4 @@
-package com.example.vwenjutian.Dagger2.DraggerDependencies;
+package com.example.vwenjutian.Dagger2.DaggerDependencies;
 
 import dagger.Module;
 import dagger.Provides;

@@ -1,11 +1,11 @@
-package com.example.vwenjutian.Dagger2.DraggerDependencies;
+package com.example.vwenjutian.Dagger2.DaggerDependencies;
 
 import com.example.vwenjutian.Dagger2.bean.Display;
 import com.example.vwenjutian.Dagger2.bean.keyboard;
 import com.example.vwenjutian.Dagger2.bean.Master;
-import com.example.vwenjutian.Dagger2.draggerFirst.ComputerComponent;
-import com.example.vwenjutian.Dagger2.draggerFirst.ComputerModule;
-import com.example.vwenjutian.Dagger2.draggerFirst.DaggerComputerComponent;
+import com.example.vwenjutian.Dagger2.daggerFirst.ComputerComponent;
+import com.example.vwenjutian.Dagger2.daggerFirst.ComputerModule;
+import com.example.vwenjutian.Dagger2.daggerFirst.DaggerComputerComponent;
 
 import javax.inject.Inject;
 

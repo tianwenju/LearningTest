@@ -1,4 +1,4 @@
-package com.example.vwenjutian.Dagger2.draggerFirst;
+package com.example.vwenjutian.Dagger2.daggerFirst;
 
 import com.example.vwenjutian.Dagger2.bean.Master;
 import com.example.vwenjutian.Dagger2.bean.keyboard;

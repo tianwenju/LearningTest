@@ -1,6 +1,6 @@
-package com.example.vwenjutian.Dagger2.DraggerDependencies;
+package com.example.vwenjutian.Dagger2.DaggerDependencies;
 
-import com.example.vwenjutian.Dagger2.draggerFirst.ComputerComponent;
+import com.example.vwenjutian.Dagger2.daggerFirst.ComputerComponent;
 
 import dagger.Component;
 

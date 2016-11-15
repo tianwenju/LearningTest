@@ -1,4 +1,4 @@
-package com.example.vwenjutian.Dagger2.DraggerQualifier;
+package com.example.vwenjutian.Dagger2.DaggerQualifier;
 
 /**
  * Created by V.Wenju.Tian on 2016/10/28.

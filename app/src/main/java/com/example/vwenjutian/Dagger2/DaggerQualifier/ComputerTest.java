@@ -1,4 +1,4 @@
-package com.example.vwenjutian.Dagger2.DraggerQualifier;
+package com.example.vwenjutian.Dagger2.DaggerQualifier;
 
 import javax.inject.Inject;
 
