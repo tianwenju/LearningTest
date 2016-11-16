@@ -16,7 +16,6 @@ public class Computer0 {
     private Display display;
 
     public Computer0() {
-//        这里new了三个水果对象（依赖）
         display = new Display();
         keyboard = new keyboard();
         saladSauce = new Master();
@@ -24,6 +23,6 @@ public class Computer0 {
     }
 
     private void makeSalad(Display display, keyboard keyboard, Master saladSauce) {
-        Log.e("TAG", "我在搅拌制作水果沙拉");
+        Log.e("TAG", "制作完成");
     }
 }
