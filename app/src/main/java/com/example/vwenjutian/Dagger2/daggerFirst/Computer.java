@@ -21,6 +21,7 @@ public class Computer {
         // DaggerComputerComponent.create().inject(this);
         DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","联想")).build().inject(this);
         makeSalad(keyboard, display, master);
+
     }
     private void makeSalad(keyboard keyboard, Display display, Master master) {
         System.out.println("制造完成");
