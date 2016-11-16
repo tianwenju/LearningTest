@@ -7,7 +7,7 @@ package com.example.vwenjutian.Dagger2.bean;
 public class Display {
     private static final String TAG = "Display";
     public Display() {
-       // Log.d(TAG, "Display() called");
+        // Log.d(TAG, "Display() called");
         System.out.println("这是个显示器");
     }
 }

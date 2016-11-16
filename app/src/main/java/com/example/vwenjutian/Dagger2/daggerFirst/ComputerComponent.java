@@ -11,7 +11,6 @@ import dagger.Component;
  */
 @Component(modules = {ComputerModule.class})//指明要在那些Module里寻找依赖
 public interface ComputerComponent {
-
     //注意：下面这三个方法，返回值必须是从上面指定的依赖库SaladModule.class中取得的对象
     //注意：而方法名不一致也行，但是方便阅读，建议一致，因为它主要是根据返回值类型来找依赖的
     //★注意：下面这三个方法也可以不写，但是如果要写，就按照这个格式来

@@ -282,8 +282,8 @@ ComputerComponent就像工厂管理员,高度目标类我有那些原料.并把�
     - 步骤3.2：若不存在参数，则直接初始化该类实例，一次依赖注入到此结束
 
 #####  原理分析
-咱们从上面知道SaladComponent是个接口,具体实现是有apt生成的类DaggerSaladComponent来实现.
-关键类: **DaggerSaladComponent**
+咱们从上面知道ComputerComponentt是个接口,具体实现是有apt生成的类DaggerSaladComponent来实现.
+关键类: **DaggerComputerComponent**
 
 **其中变量有哪些？**
 
@@ -325,7 +325,7 @@ public interface Provider<T> {
 
 DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","联想")).build().inject(this); 
 
-其中 DaggerSaladComponent.builder().saladModule(new SaladModule("菲律宾","苦的")).build()会调用以下
+其中 DaggerComputerComponent.builder().computerModule(new ComputerModule("中国","联想")).build()会调用以下
 
 
      @SuppressWarnings("unchecked")

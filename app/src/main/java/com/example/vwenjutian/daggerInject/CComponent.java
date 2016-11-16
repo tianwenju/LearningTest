@@ -7,7 +7,7 @@ import dagger.Component;
  */
 //不用指定具体的module
 @Component
-public interface CupComponent {
-    void inject(Cup cup);
-   // void inject (Tea tea);
+public interface CComponent {
+    void inject(C c);
+   // void inject (B b);
 }

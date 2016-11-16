@@ -6,14 +6,14 @@ import javax.inject.Inject;
  * Created by V.Wenju.Tian on 2016/11/15.
  */
 
-public class Tea {
+public class B {
     @Inject
     A a;
 
     @Inject
-    public Tea() {
+    public B() {
 
-        System.out.println("This is tea!");
+        System.out.println("This is b!");
     }
 
     public String useA() {
